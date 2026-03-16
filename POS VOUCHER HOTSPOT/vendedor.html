@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI SUPERCITO - Venta Rápida</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .logo {
+            width: 120px;
+            margin-bottom: 10px;
+        }
+        
+        .quick-sell {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .plan-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .plan-card {
+            border: 3px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .plan-card:hover {
+            border-color: #E63946;
+            transform: translateY(-2px);
+        }
+        
+        .plan-card.selected {
+            border-color: #E63946;
+            background: #FFF5F5;
+        }
+        
+        .plan-card.sold-out {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .plan-duration {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .plan-price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #E63946;
+            margin: 10px 0;
+        }
+        
+        .plan-stock {
+            font-size: 14px;
+            color: #666;
+            background: #f5f5f5;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .btn-sell {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #FF6B35, #E63946);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .btn-sell:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-sell:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(230, 57, 70, 0.4);
+        }
+        
+        .voucher-display {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .pin-show {
+            font-size: 56px;
+            font-weight: bold;
+            color: #E63946;
+            letter-spacing: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            background: #FFF5F5;
+            padding: 20px;
+            border-radius: 10px;
+            border: 3px dashed #E63946;
+        }
+        
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-action {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+        
+        .btn-print {
+            background: #333;
+            color: white;
+        }
+        
+        .btn-new {
+            background: #E63946;
+            color: white;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/assets/logo_MI_SUPERCITO.jpeg" alt="MI SUPERCITO" class="logo">
+            <h2>🚀 Venta Rápida</h2>
+            <p id="sellerName">Vendedor: Cargando...</p>
+        </div>
+
+        <div class="quick-sell" id="sellPanel">
+            <h3>Selecciona el Plan:</h3>
+            
+            <div class="plan-grid" id="planGrid">
+                <!-- Dinámico -->
+            </div>
+
+            <button class="btn-sell" id="sellBtn" onclick="sellVoucher()" disabled>
+                VENDER AHORA
+            </button>
+        </div>
+
+        <div class="voucher-display" id="voucherPanel">
+            <h2>✅ ¡Venta Exitosa!</h2>
+            <p>Código de Acceso WiFi:</p>
+            <div class="pin-show" id="soldPin">----</div>
+            <p id="planDetails" style="color: #666; margin-bottom: 20px;"></p>
+            
+            <img id="voucherImg" style="max-width: 100%; border-radius: 10px; margin-bottom: 20px;" src="" alt="Voucher">
+            
+            <div class="actions">
+                <button class="btn-action btn-whatsapp" onclick="sendWhatsApp()">
+                    📱 WhatsApp
+                </button>
+                <button class="btn-action btn-print" onclick="printVoucher()">
+                    🖨️ Imprimir
+                </button>
+                <button class="btn-action btn-new" onclick="newSale()">
+                    🔄 Nueva Venta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        const token = localStorage.getItem('supercito_token');
+        
+        let availablePlans = [];
+        let selectedPlan = null;
+        let currentVoucher = null;
+
+        async function loadInventory() {
+            try {
+                const res = await fetch(`${API_URL}/vouchers/available`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                availablePlans = await res.json();
+                renderPlans();
+            } catch (e) {
+                alert('Error cargando inventario');
+            }
+        }
+
+        function renderPlans() {
+            const grid = document.getElementById('planGrid');
+            grid.innerHTML = availablePlans.map(plan => `
+                <div class="plan-card ${plan.count === 0 ? 'sold-out' : ''}" 
+                     onclick="selectPlan('${plan.duration}', ${plan.price}, ${plan.count})"
+                     data-duration="${plan.duration}"
+                     data-price="${plan.price}">
+                    <div class="plan-duration">${formatDuration(plan.duration)}</div>
+                    <div class="plan-price">$${plan.price}</div>
+                    <span class="plan-stock">${plan.count} disponibles</span>
+                </div>
+            `).join('');
+        }
+
+        function formatDuration(minutes) {
+            if (minutes < 60) return `${minutes} Min`;
+            if (minutes < 1440) return `${Math.floor(minutes/60)} Horas`;
+            if (minutes === 1440) return '1 Día';
+            return `${Math.floor(minutes/1440)} Días`;
+        }
+
+        function selectPlan(duration, price, count) {
+            if (count === 0) return;
+            
+            document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            selectedPlan = { duration, price };
+            document.getElementById('sellBtn').disabled = false;
+        }
+
+        async function sellVoucher() {
+            if (!selectedPlan) return;
+            
+            const plan = availablePlans.find(p => p.duration == selectedPlan.duration && p.price == selectedPlan.price);
+            if (!plan || plan.vouchers.length === 0) {
+                alert('No hay vouchers disponibles de este tipo');
+                return;
+            }
+            
+            const voucherId = plan.vouchers[0].id;
+            
+            try {
+                const res = await fetch(`${API_URL}/vouchers/sell`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        voucherId,
+                        saleType: 'store'
+                    })
+                });
+                
+                const result = await res.json();
+                
+                if (result.success) {
+                    currentVoucher = result.voucher;
+                    showVoucher(result.voucher);
+                }
+            } catch (e) {
+                alert('Error en la venta');
+            }
+        }
+
+        function showVoucher(voucher) {
+            document.getElementById('sellPanel').style.display = 'none';
+            document.getElementById('voucherPanel').style.display = 'block';
+            
+            document.getElementById('soldPin').textContent = voucher.pin;
+            document.getElementById('planDetails').textContent = 
+                `${formatDuration(voucher.duration)} - $${voucher.price}`;
+            document.getElementById('voucherImg').src = voucher.imageUrl;
+        }
+
+        function sendWhatsApp() {
+            if (!currentVoucher) return;
+            const phone = prompt('Ingresa número de WhatsApp (52xxxxxxxxxx):');
+            if (phone) {
+                const msg = `¡Gracias por tu compra en MI SUPERCITO! 🛒\n\n` +
+                           `🔑 Código WiFi: ${currentVoucher.pin}\n` +
+                           `⏱️ Duración: ${formatDuration(currentVoucher.duration)}\n\n` +
+                           `Conéctate a MI_SUPERCITO_WIFI e ingresa tu código.`;
+                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`);
+            }
+        }
+
+        function printVoucher() {
+            window.print();
+        }
+
+        function newSale() {
+            location.reload();
+        }
+
+        // Inicializar
+        loadInventory();
+        setInterval(loadInventory, 10000); // Actualizar cada 10 seg
+    </script>
+</body>
+</html>

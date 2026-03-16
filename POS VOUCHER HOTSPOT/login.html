@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI SUPERCITO - WiFi Zone</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #E63946 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .logo {
+            width: 180px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #E63946;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .pin-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 32px;
+            text-align: center;
+            letter-spacing: 10px;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .pin-input:focus {
+            outline: none;
+            border-color: #E63946;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #FF6B35, #E63946);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(230, 57, 70, 0.4);
+        }
+        
+        .buy-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px dashed #ddd;
+        }
+        
+        .buy-title {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #25D366;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .whatsapp-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+        }
+        
+        .help-text {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .error-msg {
+            background: #FFE5E5;
+            color: #E63946;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .success-icon {
+            font-size: 100px;
+            color: #25D366;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="logo_MI_SUPERCITO.jpeg" alt="MI SUPERCITO" class="logo">
+        <h1>🛒 BIENVENIDO</h1>
+        <p class="subtitle">Ingresa tu código de acceso WiFi</p>
+        
+        <div class="error-msg" id="errorMsg">
+            Código incorrecto o expirado
+        </div>
+        
+        <form id="loginForm" action="$(link-login-only)" method="post">
+            <input type="hidden" name="dst" value="$(link-orig)">
+            <input type="hidden" name="popup" value="true">
+            
+            <input type="text" 
+                   name="username" 
+                   class="pin-input" 
+                   placeholder="----" 
+                   maxlength="9"
+                   autocomplete="off"
+                   required>
+            
+            <input type="hidden" name="password" id="passwordField">
+            
+            <button type="submit" class="btn-login">
+                🚀 Conectarme
+            </button>
+        </form>
+        
+        <div class="buy-section">
+            <h3 class="buy-title">¿No tienes código?</h3>
+            <a href="https://wa.me/521234567890?text=Hola!%20Quiero%20comprar%20una%20ficha%20de%20WiFi%20en%20MI%20SUPERCITO" 
+               class="whatsapp-btn" 
+               target="_blank">
+                📱 Comprar por WhatsApp
+            </a>
+            <p class="help-text">
+                O visita nuestra tienda física<br>
+                ¡Te atendemos de inmediato!
+            </p>
+        </div>
+    </div>
+    
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">✅</div>
+        <h2>¡Conectado!</h2>
+        <p>Disfruta de tu navegación</p>
+    </div>
+
+    <script>
+        // Formatear input (añadir guión automático)
+        document.querySelector('.pin-input').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 4) {
+                value = value.slice(0,4) + '-' + value.slice(4,8);
+            }
+            e.target.value = value;
+            
+            // Copiar a password (MikroTik requiere ambos campos)
+            document.getElementById('passwordField').value = value;
+        });
+        
+        // Detectar error de login MikroTik
+        if (window.location.search.includes('error=')) {
+            document.getElementById('errorMsg').style.display = 'block';
+        }
+        
+        // Detectar login exitoso
+        if (window.location.search.includes('login=true')) {
+            document.getElementById('successOverlay').style.display = 'flex';
+            setTimeout(() => {
+                window.location.href = 'https://www.google.com'; // Redirigir después de login
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

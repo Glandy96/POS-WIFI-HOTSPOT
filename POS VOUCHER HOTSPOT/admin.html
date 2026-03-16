@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI SUPERCITO - Panel Administrador</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #E63946 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .logo-img {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard {
+            display: none;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .nav-tab {
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab.active {
+            background: #E63946;
+            color: white;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B35, #E63946);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(230, 57, 70, 0.4);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .stat-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #E63946;
+        }
+        
+        .batch-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .batch-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B35, #E63946);
+            transition: width 0.3s;
+        }
+        
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #E63946;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <img src="/assets/logo_MI_SUPERCITO.jpeg" alt="MI SUPERCITO" class="logo-img">
+            <h2>Panel de Administración</h2>
+            <p style="margin: 20px 0; color: #666;">Sistema WiFi Hotspot</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="text" id="username" placeholder="Usuario" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Ingresar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="header">
+            <div>
+                <h1>🛒 MI SUPERCITO WiFi</h1>
+                <p>Panel de Administración</p>
+            </div>
+            <div>
+                <span id="userName"></span>
+                <button onclick="logout()" class="btn" style="background: #333; color: white; margin-left: 10px;">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('generator')">⚡ Generar Lotes</button>
+            <button class="nav-tab" onclick="showTab('inventory')">📦 Inventario</button>
+            <button class="nav-tab" onclick="showTab('stats')">📊 Estadísticas</button>
+            <button class="nav-tab" onclick="showTab('whatsapp')">💬 WhatsApp Bot</button>
+        </div>
+
+        <!-- Generador de Lotes -->
+        <div id="generatorTab" class="tab-content">
+            <div class="card">
+                <h2>⚡ Generar Nuevo Lote de Vouchers</h2>
+                <p style="color: #666; margin-bottom: 20px;">Crea vouchers pre-generados listos para vender</p>
+                
+                <form id="batchForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Cantidad de Vouchers</label>
+                            <input type="number" id="batchQuantity" min="1" max="100" value="10" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Plan/Duración</label>
+                            <select id="batchPlan" required>
+                                <option value="60" data-price="10">1 Hora - $10</option>
+                                <option value="180" data-price="25">3 Horas - $25</option>
+                                <option value="300" data-price="40">5 Horas - $40</option>
+                                <option value="1440" data-price="80">1 Día - $80</option>
+                                <option value="10080" data-price="350">1 Semana - $350</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Perfil de Velocidad</label>
+                            <select id="batchProfile" required>
+                                <option value="default">Cargando...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Precio Unitario</label>
+                            <input type="text" id="batchPrice" value="$10" readonly style="background: #f5f5f5;">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                        🚀 Generar Lote Ahora
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Inventario -->
+        <div id="inventoryTab" class="tab-content hidden">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalAvailable">0</div>
+                    <div>Disponibles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalSold">0</div>
+                    <div>Vendidos Hoy</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>📦 Lotes Activos</h3>
+                <div class="batch-list" id="batchList">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div id="statsTab" class="tab-content hidden">
+            <div class="card">
+                <h2>📊 Resumen de Ventas</h2>
+                <canvas id="salesChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- WhatsApp -->
+        <div id="whatsappTab" class="tab-content hidden">
+            <div class="card">
+                <h2>💬 Estado del Asistente WhatsApp</h2>
+                <div id="whatsappStatus">
+                    <p>🟡 Iniciando...</p>
+                </div>
+                <div style="margin-top: 20px;">
+                    <h3>Últimas Conversaciones:</h3>
+                    <div id="chatList" style="margin-top: 15px;">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <h3 style="color: white; margin-top: 20px;">Generando vouchers...</h3>
+        <p style="color: #ccc;">Sincronizando con MikroTik</p>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let token = localStorage.getItem('supercito_token');
+        let currentUser = null;
+
+        // Verificar sesión
+        if (token) {
+            showDashboard();
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.token) {
+                    token = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('supercito_token', token);
+                    showDashboard();
+                } else {
+                    alert('Credenciales incorrectas');
+                }
+            } catch (error) {
+                alert('Error de conexión');
+            }
+        });
+
+        function showDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('userName').textContent = currentUser?.username || 'Admin';
+            loadProfiles();
+            updateStats();
+        }
+
+        function logout() {
+            localStorage.removeItem('supercito_token');
+            location.reload();
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(tab + 'Tab').classList.remove('hidden');
+            event.target.classList.add('active');
+            
+            if (tab === 'inventory') loadInventory();
+            if (tab === 'stats') loadStats();
+        }
+
+        async function loadProfiles() {
+            try {
+                const res = await fetch(`${API_URL}/profiles`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const profiles = await res.json();
+                const select = document.getElementById('batchProfile');
+                select.innerHTML = profiles.map(p => 
+                    `<option value="${p.name}">${p.name} (${p.rateLimit})</option>`
+                ).join('');
+            } catch (e) {
+                console.error('Error cargando perfiles');
+            }
+        }
+
+        document.getElementById('batchPlan').addEventListener('change', (e) => {
+            const option = e.target.options[e.target.selectedIndex];
+            document.getElementById('batchPrice').value = `$${option.dataset.price}`;
+        });
+
+        document.getElementById('batchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const planSelect = document.getElementById('batchPlan');
+            const option = planSelect.options[planSelect.selectedIndex];
+            
+            const data = {
+                quantity: parseInt(document.getElementById('batchQuantity').value),
+                duration: parseInt(planSelect.value),
+                price: parseFloat(option.dataset.price),
+                profile: document.getElementById('batchProfile').value
+            };
+            
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            try {
+                const res = await fetch(`${API_URL}/batches/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await res.json();
+                
+                if (result.success) {
+                    alert(`✅ Lote ${result.batchCode} creado con ${result.quantity} vouchers`);
+                    document.getElementById('batchForm').reset();
+                }
+            } catch (error) {
+                alert('Error generando lote');
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        });
+
+        async function updateStats() {
+            try {
+                const res = await fetch(`${API_URL}/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const stats = await res.json();
+                
+                document.getElementById('totalAvailable').textContent = stats.available;
+                // Actualizar más estadísticas...
+            } catch (e) {}
+        }
+
+        async function loadInventory() {
+            // Cargar lista de lotes...
+        }
+
+        async function loadStats() {
+            // Cargar gráficos...
+        }
+
+        // Actualizar cada 30 segundos
+        setInterval(updateStats, 30000);
+    </script>
+</body>
+</html>
