@@ -3,12 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal de acceso WiFi MI SUPERCITO">
+    <meta name="theme-color" content="#E63946">
     <title>MI SUPERCITO - WiFi Zone</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #E63946 100%);
             min-height: 100vh;
             display: flex;
@@ -25,60 +35,135 @@
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .logo {
             width: 180px;
+            height: auto;
             margin-bottom: 20px;
+            max-width: 100%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         h1 {
             color: #E63946;
             margin-bottom: 10px;
             font-size: 28px;
+            font-weight: 700;
         }
         
         .subtitle {
             color: #666;
             margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
         }
         
         .pin-input {
             width: 100%;
-            padding: 20px;
-            font-size: 32px;
+            padding: 16px;
+            font-size: 28px;
             text-align: center;
-            letter-spacing: 10px;
+            letter-spacing: 8px;
             border: 3px solid #ddd;
             border-radius: 12px;
-            margin-bottom: 20px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Courier New', 'Courier', monospace;
             font-weight: bold;
             color: #333;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+        }
+        
+        .pin-input:hover {
+            border-color: #F7931E;
         }
         
         .pin-input:focus {
             outline: none;
             border-color: #E63946;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+        }
+        
+        .pin-input:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .pin-counter {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
         }
         
         .btn-login {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: linear-gradient(135deg, #FF6B35, #E63946);
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
         
-        .btn-login:hover {
+        .btn-login:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(230, 57, 70, 0.4);
+        }
+        
+        .btn-login:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .btn-login.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            right: 20px;
+            margin-top: -8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         .buy-section {
@@ -90,6 +175,8 @@
         .buy-title {
             color: #333;
             margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
         }
         
         .whatsapp-btn {
@@ -98,11 +185,12 @@
             gap: 10px;
             background: #25D366;
             color: white;
-            padding: 15px 30px;
+            padding: 14px 28px;
             border-radius: 30px;
             text-decoration: none;
             font-weight: bold;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
         
         .whatsapp-btn:hover {
@@ -110,19 +198,38 @@
             box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
         }
         
+        .whatsapp-btn:focus {
+            outline: none;
+            border-color: #1a8d3d;
+        }
+        
         .help-text {
-            margin-top: 20px;
+            margin-top: 15px;
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
+            line-height: 1.6;
         }
         
         .error-msg {
             background: #FFE5E5;
-            color: #E63946;
-            padding: 15px;
+            color: #C41E3A;
+            padding: 14px;
             border-radius: 8px;
             margin-bottom: 20px;
             display: none;
+            border-left: 4px solid #E63946;
+            animation: shake 0.5s;
+            font-weight: 500;
+        }
+        
+        .error-msg.show {
+            display: block;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
         
         .success-overlay {
@@ -132,45 +239,108 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.98);
             z-index: 1000;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .success-overlay.show {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .success-icon {
-            font-size: 100px;
-            color: #25D366;
+            font-size: 80px;
             margin-bottom: 20px;
+            animation: bounceIn 0.6s ease-out;
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .success-overlay h2 {
+            font-size: 32px;
+            color: #25D366;
+            margin-bottom: 10px;
+        }
+        
+        .success-overlay p {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .btn-login {
+                padding: 14px;
+                font-size: 16px;
+            }
+            
+            .pin-input {
+                font-size: 24px;
+                letter-spacing: 6px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <img src="logo_MI_SUPERCITO.jpeg" alt="MI SUPERCITO" class="logo">
+    <main class="login-container">
+        <img src="logo_MI_SUPERCITO.jpeg" alt="Logo MI SUPERCITO" class="logo">
         <h1>🛒 BIENVENIDO</h1>
         <p class="subtitle">Ingresa tu código de acceso WiFi</p>
         
-        <div class="error-msg" id="errorMsg">
-            Código incorrecto o expirado
+        <div class="error-msg" id="errorMsg" role="alert" aria-live="polite">
+            <span id="errorText">Código incorrecto o expirado</span>
         </div>
         
-        <form id="loginForm" action="$(link-login-only)" method="post">
+        <form id="loginForm" action="$(link-login-only)" method="post" novalidate>
             <input type="hidden" name="dst" value="$(link-orig)">
             <input type="hidden" name="popup" value="true">
             
-            <input type="text" 
-                   name="username" 
-                   class="pin-input" 
-                   placeholder="----" 
-                   maxlength="9"
-                   autocomplete="off"
-                   required>
+            <div class="form-group">
+                <label for="pinInput" class="sr-only">Código de acceso WiFi</label>
+                <input 
+                    type="text" 
+                    id="pinInput"
+                    name="username" 
+                    class="pin-input" 
+                    placeholder="0000-0000" 
+                    maxlength="9"
+                    autocomplete="off"
+                    inputmode="numeric"
+                    aria-label="Código de acceso WiFi de 8 dígitos"
+                    required>
+                <div class="pin-counter">
+                    <span id="charCount">0</span>/8 dígitos
+                </div>
+            </div>
             
             <input type="hidden" name="password" id="passwordField">
             
-            <button type="submit" class="btn-login">
+            <button type="submit" class="btn-login" id="loginBtn">
                 🚀 Conectarme
             </button>
         </form>
@@ -179,7 +349,9 @@
             <h3 class="buy-title">¿No tienes código?</h3>
             <a href="https://wa.me/521234567890?text=Hola!%20Quiero%20comprar%20una%20ficha%20de%20WiFi%20en%20MI%20SUPERCITO" 
                class="whatsapp-btn" 
-               target="_blank">
+               target="_blank"
+               rel="noopener noreferrer"
+               aria-label="Comprar código WiFi por WhatsApp">
                 📱 Comprar por WhatsApp
             </a>
             <p class="help-text">
@@ -187,38 +359,177 @@
                 ¡Te atendemos de inmediato!
             </p>
         </div>
-    </div>
+    </main>
     
-    <div class="success-overlay" id="successOverlay">
+    <div class="success-overlay" id="successOverlay" role="status" aria-live="assertive" aria-label="Conexión exitosa">
         <div class="success-icon">✅</div>
         <h2>¡Conectado!</h2>
         <p>Disfruta de tu navegación</p>
     </div>
 
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+
     <script>
-        // Formatear input (añadir guión automático)
-        document.querySelector('.pin-input').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 4) {
-                value = value.slice(0,4) + '-' + value.slice(4,8);
+        // === VALIDACIÓN Y FORMATO DEL PIN ===
+        class PINValidator {
+            constructor() {
+                this.pinInput = document.getElementById('pinInput');
+                this.passwordField = document.getElementById('passwordField');
+                this.loginForm = document.getElementById('loginForm');
+                this.loginBtn = document.getElementById('loginBtn');
+                this.errorMsg = document.getElementById('errorMsg');
+                this.charCount = document.getElementById('charCount');
+                this.successOverlay = document.getElementById('successOverlay');
+                
+                this.init();
             }
-            e.target.value = value;
             
-            // Copiar a password (MikroTik requiere ambos campos)
-            document.getElementById('passwordField').value = value;
-        });
-        
-        // Detectar error de login MikroTik
-        if (window.location.search.includes('error=')) {
-            document.getElementById('errorMsg').style.display = 'block';
+            init() {
+                if (!this.pinInput || !this.passwordField) {
+                    console.error('Elementos requeridos no encontrados');
+                    return;
+                }
+                
+                this.attachEventListeners();
+                this.checkPageStatus();
+            }
+            
+            attachEventListeners() {
+                this.pinInput.addEventListener('input', (e) => this.handleInput(e));
+                this.pinInput.addEventListener('keypress', (e) => this.handleKeyPress(e));
+                this.loginForm.addEventListener('submit', (e) => this.handleSubmit(e));
+            }
+            
+            handleInput(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Solo dígitos
+                let formatted = '';
+                
+                // Validar máximo 8 dígitos
+                if (value.length > 8) {
+                    value = value.slice(0, 8);
+                }
+                
+                // Formatear: XXXX-XXXX
+                if (value.length > 0) {
+                    formatted = value.slice(0, 4);
+                    if (value.length > 4) {
+                        formatted += '-' + value.slice(4, 8);
+                    }
+                }
+                
+                e.target.value = formatted;
+                this.passwordField.value = value;
+                
+                // Actualizar contador
+                this.charCount.textContent = value.length;
+                
+                // Limpiar error anterior
+                this.clearError();
+            }
+            
+            handleKeyPress(e) {
+                // Permitir solo números
+                if (!/^\d$/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete') {
+                    e.preventDefault();
+                }
+                
+                // Enter para enviar (si son 8 dígitos)
+                if (e.key === 'Enter') {
+                    const digits = this.pinInput.value.replace(/\D/g, '');
+                    if (digits.length === 8) {
+                        this.loginForm.dispatchEvent(new Event('submit'));
+                    }
+                }
+            }
+            
+            handleSubmit(e) {
+                e.preventDefault();
+                
+                const pin = this.pinInput.value.replace(/\D/g, '');
+                
+                // Validación del lado del cliente
+                if (pin.length !== 8) {
+                    this.showError('Por favor ingresa 8 dígitos válidos');
+                    return;
+                }
+                
+                // Si la validación pasa, proceder
+                this.disableForm();
+                
+                // Enviar el formulario (MikroTik manejará la autenticación)
+                setTimeout(() => {
+                    this.loginForm.submit();
+                }, 300);
+            }
+            
+            showError(message) {
+                this.errorMsg.textContent = message || 'Error en la validación';
+                this.errorMsg.classList.add('show');
+                this.pinInput.focus();
+            }
+            
+            clearError() {
+                this.errorMsg.classList.remove('show');
+            }
+            
+            disableForm() {
+                this.pinInput.disabled = true;
+                this.loginBtn.disabled = true;
+                this.loginBtn.classList.add('loading');
+            }
+            
+            enableForm() {
+                this.pinInput.disabled = false;
+                this.loginBtn.disabled = false;
+                this.loginBtn.classList.remove('loading');
+            }
+            
+            checkPageStatus() {
+                const params = new URLSearchParams(window.location.search);
+                
+                // Detectar error de login
+                if (params.has('error')) {
+                    this.enableForm();
+                    this.showError('Código incorrecto o expirado. Intenta nuevamente.');
+                }
+                
+                // Detectar login exitoso
+                if (params.get('login') === 'true') {
+                    this.showSuccessOverlay();
+                }
+            }
+            
+            showSuccessOverlay() {
+                if (this.successOverlay) {
+                    this.successOverlay.classList.add('show');
+                    
+                    // Redirigir después de 3 segundos
+                    setTimeout(() => {
+                        window.location.href = 'https://www.google.com';
+                    }, 3000);
+                }
+            }
         }
         
-        // Detectar login exitoso
-        if (window.location.search.includes('login=true')) {
-            document.getElementById('successOverlay').style.display = 'flex';
-            setTimeout(() => {
-                window.location.href = 'https://www.google.com'; // Redirigir después de login
-            }, 3000);
+        // Inicializar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                new PINValidator();
+            });
+        } else {
+            new PINValidator();
         }
     </script>
 </body>
